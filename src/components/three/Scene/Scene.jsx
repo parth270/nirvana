@@ -141,11 +141,11 @@ const Scene = ({ randoms }) => {
 
   return (
     <>
-      <color
+      {/* <color
         attach="background"
         // args={[pages[0].back]}
-        args={["#444"]}
-      />
+        args={["transparent"]}
+      /> */}
       {/* <OrbitControls maxPolarAngle={Math.PI / 2} target={[0, 5, 0]} /> */}
       {/* <Effects /> */}
       <ambientLight intensity={1} color={"#fff"} />
@@ -154,13 +154,14 @@ const Scene = ({ randoms }) => {
         <shaderMaterial
           uniforms={uniforms}
           wireframe={false}
+          opacity={1}
           fog={true}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
         />
       </mesh>
       <mesh
-        visibl={false}
+        visible={false}
         position={[
           400000 * Math.cos(phi),
           400000 * Math.sin(phi) * Math.sin(theta),
@@ -170,7 +171,7 @@ const Scene = ({ randoms }) => {
         <sphereGeometry args={[20000, 16, 8]} />
         <meshBasicMaterial color={"#ffffff"} />
       </mesh>
-      <Sky
+      {/* <Sky
         scale={[45000, 45000, 45000]}
         turbidity={20}
         rayleigh={0}
@@ -181,8 +182,8 @@ const Scene = ({ randoms }) => {
           400000 * Math.sin(phi) * Math.sin(theta),
           400000 * Math.sin(phi) * Math.cos(theta),
         ]}
-      />
-      <Cloud position={[0,10,0]}  />
+      /> */}
+      {/* <Cloud position={[0,10,0]}  /> */}
       <Rig></Rig>
     </>
   );
