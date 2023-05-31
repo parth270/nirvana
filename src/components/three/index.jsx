@@ -15,10 +15,10 @@ const CanvasContainer = ({ curr1 }) => {
   return (
     <Canvas
       camera={{
-        position: [0, 8, 4],
+        position: [0, 0, -10],
         fov: 60,
-        near:0.1,
-        far:10000
+        near: 0.1,
+        far: 10000,
       }}
       dpr={devicePixelRatio}
       gl={{

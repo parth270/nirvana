@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as THREE from "three";
 import { setLoading } from "../../../services/three";
@@ -24,18 +24,21 @@ const Scene = ({ randoms }) => {
 
   const texture = useTexture("/shaderpng.png");
 
-  const [uniforms, setUniforms] = useState({
-    time: { type: "f", value: 0.0 },
-    distortCenter: { type: "f", value: 0.1 },
-    roadWidth: { type: "f", value: 0.5 },
-    pallete: { type: "t", value: null },
-    speed: { type: "f", value: 0.5 },
-    maxHeight: { type: "f", value: 10.0 },
-    color: new THREE.Color(1, 1, 1),
-    pallete: {
-      value: texture,
-    },
-  });
+  const uniforms = useMemo(
+    () => ({
+      time: { type: "f", value: 0.0 },
+      distortCenter: { type: "f", value: 0.1 },
+      roadWidth: { type: "f", value: 0.5 },
+      pallete: { type: "t", value: null },
+      speed: { type: "f", value: 0.5 },
+      maxHeight: { type: "f", value: 10.0 },
+      color: new THREE.Color(1, 1, 1),
+      pallete: {
+        value: texture,
+      },
+    }),
+    []
+  );
 
   function map(value, start1, stop1, start2, stop2) {
     return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
@@ -45,6 +48,7 @@ const Scene = ({ randoms }) => {
     return (1 - amt) * start + amt * end;
   }
 
+  const ref = useRef();
   useFrame(() => {
     setMouse({
       ...mouse,
@@ -52,18 +56,34 @@ const Scene = ({ randoms }) => {
       yDamped: lerp(mouse.yDamped, mouse.y, 0.1),
     });
     const time = performance.now() * 0.001;
-    setUniforms({
-      ...uniforms,
-      time: { ...uniforms.time, value: time },
-      distortCenter: {
-        ...uniforms.distortCenter,
-        value: map(mouse.xDamped, 0, window.innerWidth, -0.1, 0.1),
-      },
-      roadWidth: {
-        ...uniforms.roadWidth,
-        value: map(mouse.yDamped, 0, window.innerHeight, -0.5, 2.5),
-      },
-    });
+    console.log(time);
+    ref.current.material.uniforms.time.value = time;
+    ref.current.material.uniforms.distortCenter.value = map(
+      mouse.xDamped,
+      0,
+      window.innerWidth,
+      -0.1,
+      0.1
+    );
+    ref.current.material.uniforms.roadWidth.value = map(
+      mouse.yDamped,
+      0,
+      window.innerHeight,
+      -0.5,
+      2.5
+    );
+    // setUniforms({
+    //   ...uniforms,
+    //   time: { ...uniforms.time, value: time },
+    //   distortCenter: {
+    //     ...uniforms.distortCenter,
+    //     value: map(mouse.xDamped, 0, window.innerWidth, -0.1, 0.1),
+    //   },
+    //   roadWidth: {
+    //     ...uniforms.roadWidth,
+    //     value: map(mouse.yDamped, 0, window.innerHeight, -0.5, 2.5),
+    //   },
+    // });
 
     // terrain.material.uniforms.time.value = time;
     // terrain.material.uniforms.distortCenter.value = map(
@@ -126,10 +146,10 @@ const Scene = ({ randoms }) => {
         // args={[pages[0].back]}
         args={["#444"]}
       />
-      <OrbitControls maxPolarAngle={Math.PI / 2} target={[0, 5, 0]} />
+      {/* <OrbitControls maxPolarAngle={Math.PI / 2} target={[0, 5, 0]} /> */}
       {/* <Effects /> */}
       <ambientLight intensity={1} color={"#fff"} />
-      <mesh position={[0, -Math.PI / 2, -180]}>
+      <mesh position={[0, -4, 0]} rotation={[Math.PI / 2, Math.PI, 0]} ref={ref}>
         <planeBufferGeometry args={[100, 400, 400, 400]} />
         <shaderMaterial
           uniforms={uniforms}
@@ -162,7 +182,7 @@ const Scene = ({ randoms }) => {
           400000 * Math.sin(phi) * Math.cos(theta),
         ]}
       />
-      <Cloud />
+      <Cloud position={[0,10,0]}  />
       <Rig></Rig>
     </>
   );
